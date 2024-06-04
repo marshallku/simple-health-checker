@@ -46,3 +46,11 @@ EOF
         -d "$json_payload" \
         "$DISCORD_WEBHOOK_URI"
 }
+
+send_notification() {
+  if [ -n "$DISCORD_WEBHOOK_URI" ]; then
+    echo 'Sending message with Discord'
+    send_discord_notification "$@"
+  fi
+}
+
