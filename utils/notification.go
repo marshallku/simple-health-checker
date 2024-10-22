@@ -33,20 +33,39 @@ type DiscordPayload struct {
 	Embeds []DiscordEmbed `json:"embeds"`
 }
 
-func SendNotification(cfg *config.Config, description, color string, fields map[string]string) {
+type NotificationParams struct {
+	Title       string
+	Description string
+	Color       string
+	Fields      map[string]string
+	Footer      string
+}
+
+func SendNotification(cfg *config.Config, params NotificationParams) {
 	if cfg.WebhookURL == "" {
 		fmt.Println("Webhook URL is not set")
 		return
 	}
 
-	sendDiscordNotification(cfg.WebhookURL, "Health check failed", description, color, fields)
+	title := params.Title
+	if title == "" {
+		title = "Health check failed"
+	}
+
+	sendDiscordNotification(cfg.WebhookURL, NotificationParams{
+		Title:       title,
+		Description: params.Description,
+		Color:       params.Color,
+		Fields:      params.Fields,
+		Footer:      time.Now().Format(time.RFC3339),
+	})
 }
 
-func sendDiscordNotification(webhookURI string, title string, description string, color string, fields map[string]string) {
-	colorInt, _ := strconv.Atoi(color)
+func sendDiscordNotification(webhookURI string, params NotificationParams) {
+	colorInt, _ := strconv.Atoi(params.Color)
 
-	discordFields := make([]DiscordField, 0, len(fields))
-	for name, value := range fields {
+	discordFields := make([]DiscordField, 0, len(params.Fields))
+	for name, value := range params.Fields {
 		discordFields = append(discordFields, DiscordField{
 			Name:  name,
 			Value: value,
@@ -57,15 +76,18 @@ func sendDiscordNotification(webhookURI string, title string, description string
 		Embeds: []DiscordEmbed{
 			{
 				Type:        "rich",
-				Title:       title,
-				Description: description,
+				Title:       params.Title,
+				Description: params.Description,
 				Color:       colorInt,
 				Fields:      discordFields,
-				Footer: DiscordFooter{
-					Text: time.Now().Format(time.RFC3339),
-				},
 			},
 		},
+	}
+
+	if params.Footer != "" {
+		payload.Embeds[0].Footer = DiscordFooter{
+			Text: params.Footer,
+		}
 	}
 
 	jsonPayload, err := json.Marshal(payload)
