@@ -1,0 +1,32 @@
+name: CI
+
+on:
+    push:
+    pull_request:
+        branches:
+            - master
+
+env:
+    CI: true
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+    check-spell:
+        name: Check spelling
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: marshallku/actions/analyze/spell@master
+    sonarqube:
+        name: Analyze with SonarQube
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/master'
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - uses: sonarsource/sonarqube-scan-action@v2
+              env:
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+                  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
