@@ -2,6 +2,8 @@
 config.sh
 HTTP_STATUS_CHECK
 HTTP_RESPONSE_CHECK
+config.yaml
+config.yml
 
 # OS generated files
 .DS_Store
