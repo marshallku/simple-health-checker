@@ -89,7 +89,7 @@ if [ -n "$HTTP_RESPONSE_CHECK" ]; then
     readarray -t http_response_check_list <<<"$HTTP_RESPONSE_CHECK"
 
     for line in "${http_response_check_list[@]}"; do
-        read -ra splitted <<<"$line"
-        check_response "${splitted[@]}"
+        read -ra split_line <<<"$line"
+        check_response "${split_line[@]}"
     done
 fi
