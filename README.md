@@ -1,67 +1,95 @@
 # Simple health checker
 
-A simple bash script to check HTTP server.
+![health-check](https://github.com/user-attachments/assets/496efc15-855a-48c8-a0ad-473c0edd1c97)
 
-1. Checking HTTP server responses with `2xx` status
-2. Checking HTTP server response body includes target string
+A lightweight, configurable health checker for web services written in Go. This tool performs HTTP requests to specified URLs and checks for expected status codes, response times, and content inclusion. It can send notifications to Discord when checks fail.
 
-![Discord webhook result](https://github.com/marshall-ku/assets/assets/72745119/bbe1ed44-b1a4-439d-ad1d-e3bad3f9ed6f)
+## Features
 
-## Why I did this
+- Configurable health checks via YAML file
+- Checks for HTTP status codes
+- Checks for response time
+- Checks for specific text inclusion in responses
+- Custom HTTP methods and headers for requests
+- Discord notifications for failed checks
 
-I am running my own server at my home, and I do test experimental things before applying them to production.\
-This is a simple script to test I messed up something.
+## Installation
+
+1. Ensure you have Go installed on your system (version 1.23 or later recommended).
+2. Clone this repository:
+
+   ```bash
+   git clone https://github.com/marshallku/simple_health_checker.git
+   cd simple_health_checker
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   go mod tidy
+   ```
+
+## Configuration
+
+Create a `config.yaml` file in the project root directory. Here's an example configuration:
+
+```yaml
+webhook_url: https://discord.com/api/webhooks/your_webhook_url_here
+timeout: 5000  # Global timeout in milliseconds
+
+pages:
+  - url: https://example.com
+    status: 200
+    text_to_include: Welcome
+    speed: 2000
+  - url: https://api.example.com
+    status: 200
+  - url: https://example.com/about
+    text_to_include: About Us
+```
+
+### Configuration Options
+
+- `webhook_url`: Discord webhook URL for notifications
+- `timeout`: Global timeout for all requests in milliseconds
+- `pages`: List of pages to check
+  - `url`: URL to check (required)
+  - `status`: Expected HTTP status code (default: 200)
+  - `text_to_include`: String to look for in the response body (optional)
+  - `speed`: Maximum acceptable response time in milliseconds (optional)
+  - `request`: Custom request options (optional)
+    - `method`: HTTP method (GET, POST, etc.)
+    - `headers`: Custom HTTP headers
+    - `body`: Request body for POST/PUT requests
 
 ## Usage
 
-```sh
-bash run.sh [options]
+Run the health checker with:
+
+```bash
+go run .
 ```
 
-### Options
+Or, to specify a different config file:
 
-| Option              | Usage     | Description                                                                              | Default |
-| ------------------- | --------- | ---------------------------------------------------------------------------------------- | ------- |
-| M(mode)             | arguments | Mode to run script. You can use `local` or `actions`                                     | local   |
-| DISCORD_WEBHOOK_URI | config    | URL of discord webhook. Click `Copy Webhook URL` in webhooks                             | -       |
-| TIMEOUT             | config    | Notifies you when curl takes longer time than `TIMEOUT`ms even if server returns 200 OK. | 500     |
-
-### Local server setting
-
-```md
--   config.sh
--   HTTP_RESPONSE_CHECK (optional)
+```bash
+go run . --config path/to/your/config.yaml
 ```
 
-The list of files you need to add.\
-Please place every file at root directory of this project.
+## Building
 
-```sh
-#!/bin/bash
+To build an executable:
 
-export DISCORD_WEBHOOK_URI='https://discord.com/api/webhooks/123/foo'
-export TIMEOUT='1500'
+```bash
+go build -o health_checker
 ```
 
-Example of `config.sh`.\
-Please notice that `DISCORD_WEBHOOK_URI` is necessary to run this script.
+Then run the executable:
 
-```txt
-https://example.com RESPONSE_STATUS 200 RESPONSE_INCLUDES FOO RESPONSE_NOT_INCLUDES BAR
-https://example.com RESPONSE_STATUS 404 RESPONSE_INCLUDES FOO
-https://example.com RESPONSE_INCLUDES BAZ
-https://example.com RESPONSE_STATUS 200 RESPONSE_NOT_INCLUDES FIZZ
+```bash
+./health_checker
 ```
 
-Example of `HTTP_RESPONSE_CHECK` file.
+## Contributing
 
-| Option                | Description                                                          |
-| --------------------- | -------------------------------------------------------------------- |
-| RESPONSE_STATUS       | The expected HTTP response status code                               |
-| RESPONSE_INCLUDES     | Characters that expected to be included in the response body         |
-| RESPONSE_NOT_INCLUDES | Characters that are NOT expected to be included in the response body |
-
-### Github actions setting
-
-1. Comment in `schedule` in `.github/workflows/health-check.yml`
-2. Add configs(eg. `TIMEOUT`, `HTTP_STATUS_CHECK`) in Actions Secrets
+Contributions are welcome! Please feel free to submit a Pull Request.
