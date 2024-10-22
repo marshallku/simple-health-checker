@@ -1,0 +1,8 @@
+webhook_url: https://discord.com/api/webhooks/000000000000000000/xxxxxxxxxxxxxxxxx-xxxx-xxxxxxxxxxxxxxxxxxxx-xxx-xxxxxxxx-xxxxxxxxxx
+timeout: 5000
+
+pages:
+    - url: https://marshallku.com
+      status: 200
+      text_to_include: marshall
+      speed: 2000
