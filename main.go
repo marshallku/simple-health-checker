@@ -21,6 +21,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Loaded configuration: %+v\n", cfg)
-
+	healthCheck(cfg)
 }
