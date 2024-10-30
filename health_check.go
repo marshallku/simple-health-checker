@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -69,7 +69,7 @@ func checkPage(cfg *config.Config, page config.Page) {
 	defer resp.Body.Close()
 
 	duration := time.Since(start)
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 	timeTaken := fmt.Sprintf("%.3f ms", float64(duration.Milliseconds()))
 
 	if page.Speed > 0 && duration.Milliseconds() > int64(page.Speed) {
