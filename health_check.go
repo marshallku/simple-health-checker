@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/marshallku/statusy/config"
@@ -12,9 +13,15 @@ import (
 )
 
 func healthCheck(cfg *config.Config) {
+	var wg sync.WaitGroup
 	for _, page := range cfg.Pages {
-		checkPage(cfg, page)
+		wg.Add(1)
+		go func(p config.Page) {
+			defer wg.Done()
+			checkPage(cfg, p)
+		}(page)
 	}
+	wg.Wait()
 }
 
 func checkPage(cfg *config.Config, page config.Page) {
