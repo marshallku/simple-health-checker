@@ -9,28 +9,39 @@ import (
 	"time"
 
 	"github.com/marshallku/statusy/config"
+	"github.com/marshallku/statusy/store"
+	"github.com/marshallku/statusy/types"
 	"github.com/marshallku/statusy/utils"
 )
 
-func Check(cfg *config.Config) {
+const (
+	UP   = "UP"
+	DOWN = "DOWN"
+)
+
+func Check(cfg *config.Config, store *store.Store) {
 	var wg sync.WaitGroup
 	for _, page := range cfg.Pages {
 		wg.Add(1)
 		go func(p config.Page) {
 			defer wg.Done()
-			checkPage(cfg, p)
+			result := checkPage(cfg, p)
+			if store != nil {
+				store.UpdateResult(result)
+			}
 		}(page)
 	}
 	wg.Wait()
 }
 
-func checkPage(cfg *config.Config, page config.Page) {
+func checkPage(cfg *config.Config, page config.Page) types.CheckResult {
 	client := &http.Client{
 		Timeout: time.Duration(cfg.Timeout) * time.Millisecond,
 	}
 
 	var req *http.Request
 	var err error
+	checkedAt := time.Now()
 
 	if page.Request != nil {
 		req, err = http.NewRequest(page.Request.Method, page.URL, strings.NewReader(page.Request.Body))
@@ -42,7 +53,13 @@ func checkPage(cfg *config.Config, page config.Page) {
 					"URL": page.URL,
 				},
 			})
-			return
+			return types.CheckResult{
+				URL:         page.URL,
+				StatusCode:  0,
+				TimeTaken:   "0",
+				Status:      false,
+				LastChecked: checkedAt,
+			}
 		}
 		for key, value := range page.Request.Headers {
 			req.Header.Set(key, value)
@@ -57,7 +74,13 @@ func checkPage(cfg *config.Config, page config.Page) {
 					"URL": page.URL,
 				},
 			})
-			return
+			return types.CheckResult{
+				URL:         page.URL,
+				StatusCode:  0,
+				TimeTaken:   "0",
+				Status:      false,
+				LastChecked: checkedAt,
+			}
 		}
 	}
 
@@ -71,7 +94,13 @@ func checkPage(cfg *config.Config, page config.Page) {
 				"URL": page.URL,
 			},
 		})
-		return
+		return types.CheckResult{
+			URL:         page.URL,
+			StatusCode:  0,
+			TimeTaken:   "0",
+			Status:      false,
+			LastChecked: checkedAt,
+		}
 	}
 	defer resp.Body.Close()
 
@@ -89,7 +118,13 @@ func checkPage(cfg *config.Config, page config.Page) {
 				"Time Taken":  timeTaken,
 			},
 		})
-		return
+		return types.CheckResult{
+			URL:         page.URL,
+			StatusCode:  resp.StatusCode,
+			TimeTaken:   timeTaken,
+			Status:      true,
+			LastChecked: checkedAt,
+		}
 	}
 
 	expectedStatus := page.Status
@@ -107,7 +142,13 @@ func checkPage(cfg *config.Config, page config.Page) {
 				"Time Taken":  timeTaken,
 			},
 		})
-		return
+		return types.CheckResult{
+			URL:         page.URL,
+			StatusCode:  resp.StatusCode,
+			TimeTaken:   timeTaken,
+			Status:      false,
+			LastChecked: checkedAt,
+		}
 	}
 
 	if page.TextToInclude != "" && !strings.Contains(string(body), page.TextToInclude) {
@@ -120,8 +161,21 @@ func checkPage(cfg *config.Config, page config.Page) {
 				"Time Taken":  timeTaken,
 			},
 		})
-		return
+		return types.CheckResult{
+			URL:         page.URL,
+			StatusCode:  resp.StatusCode,
+			TimeTaken:   timeTaken,
+			Status:      false,
+			LastChecked: checkedAt,
+		}
 	}
 
 	fmt.Printf("Succeeded: %s with status %d\n", page.URL, resp.StatusCode)
+	return types.CheckResult{
+		URL:         page.URL,
+		StatusCode:  resp.StatusCode,
+		TimeTaken:   timeTaken,
+		Status:      true,
+		LastChecked: checkedAt,
+	}
 }

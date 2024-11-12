@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	WebhookURL string `yaml:"webhook_url"`
-	Timeout    int    `yaml:"timeout"`
-	Pages      []Page `yaml:"pages"`
+	WebhookURL    string `yaml:"webhook_url"`
+	Timeout       int    `yaml:"timeout"`
+	Pages         []Page `yaml:"pages"`
+	CheckInterval int    `yaml:"check_interval"`
 }
 
 type Page struct {

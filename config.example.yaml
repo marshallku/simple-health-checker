@@ -1,5 +1,6 @@
 webhook_url: https://discord.com/api/webhooks/000000000000000000/xxxxxxxxxxxxxxxxx-xxxx-xxxxxxxxxxxxxxxxxxxx-xxx-xxxxxxxx-xxxxxxxxxx
 timeout: 5000
+check_interval: 5
 
 pages:
     - url: https://marshallku.com
