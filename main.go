@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/marshallku/statusy/config"
+	health "github.com/marshallku/statusy/pkg"
 )
 
 func main() {
@@ -21,5 +22,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	healthCheck(cfg)
+	health.Check(cfg)
 }

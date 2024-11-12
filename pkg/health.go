@@ -1,4 +1,4 @@
-package main
+package health
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 	"github.com/marshallku/statusy/utils"
 )
 
-func healthCheck(cfg *config.Config) {
+func Check(cfg *config.Config) {
 	var wg sync.WaitGroup
 	for _, page := range cfg.Pages {
 		wg.Add(1)
