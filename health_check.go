@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/marshallku/simple_health_checker/config"
-	"github.com/marshallku/simple_health_checker/utils"
+	"github.com/marshallku/statusy/config"
+	"github.com/marshallku/statusy/utils"
 )
 
 func healthCheck(cfg *config.Config) {

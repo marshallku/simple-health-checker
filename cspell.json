@@ -1,4 +1,11 @@
 {
-    "words": ["marshallku", "testdata"],
-    "ignorePaths": ["go.mod", "go.sum"]
+    "words": [
+        "marshallku",
+        "Statusy",
+        "testdata"
+    ],
+    "ignorePaths": [
+        "go.mod",
+        "go.sum"
+    ]
 }

@@ -1,4 +1,4 @@
-# Simple health checker
+# Statusy
 
 ![health-check](https://github.com/user-attachments/assets/496efc15-855a-48c8-a0ad-473c0edd1c97)
 
@@ -19,8 +19,8 @@ A lightweight, configurable health checker for web services written in Go. This 
 2. Clone this repository:
 
    ```bash
-   git clone https://github.com/marshallku/simple_health_checker.git
-   cd simple_health_checker
+   git clone https://github.com/marshallku/statusy.git
+   cd statusy
    ```
 
 3. Install dependencies:

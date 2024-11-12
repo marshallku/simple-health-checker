@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/marshallku/simple_health_checker/config"
+	"github.com/marshallku/statusy/config"
 )
 
 func main() {
