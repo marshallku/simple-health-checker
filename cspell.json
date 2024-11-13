@@ -3,7 +3,9 @@
         "marshallku",
         "Statusy",
         "testdata",
-        "upgrader"
+        "upgrader",
+        "onclose",
+        "onmessage"
     ],
     "ignorePaths": [
         "go.mod",
