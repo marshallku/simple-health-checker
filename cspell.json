@@ -2,7 +2,8 @@
     "words": [
         "marshallku",
         "Statusy",
-        "testdata"
+        "testdata",
+        "upgrader"
     ],
     "ignorePaths": [
         "go.mod",

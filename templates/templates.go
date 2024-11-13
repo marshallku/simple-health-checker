@@ -7,7 +7,6 @@ var IndexTemplate = template.Must(template.New("index").Parse(`
 <html>
 <head>
     <title>Statusy - Current Status</title>
-    <meta http-equiv="refresh" content="30">
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .status-card {
@@ -28,15 +27,39 @@ var IndexTemplate = template.Must(template.New("index").Parse(`
         <a href="/history">History</a>
     </nav>
     <h1>Current Status</h1>
-    {{range .}}
-    <div class="status-card {{.Status}}">
-        <h3>{{.URL}}</h3>
-        <p>Status: {{.Status}}</p>
-        <p>Status Code: {{.StatusCode}}</p>
-        <p>Response Time: {{.TimeTaken}}</p>
-        <p>Last Checked: {{.LastChecked.Format "2006-01-02 15:04:05"}}</p>
-    </div>
-    {{end}}
+    <div id="status-container"></div>
+
+    <script>
+        const statusContainer = document.getElementById('status-container');
+
+        function updateStatus(results) {
+            statusContainer.innerHTML = Object.values(results)
+                .map(result => ` + "`" + `
+                    <div class="status-card ${result.Status}">
+                        <h3>${result.URL}</h3>
+                        <p>Status: ${result.Status}</p>
+                        <p>Status Code: ${result.StatusCode}</p>
+                        <p>Response Time: ${result.TimeTaken}</p>
+                        <p>Last Checked: ${new Date(result.LastChecked).toLocaleString()}</p>
+                    </div>
+                ` + "`" + `).join('');
+        }
+
+        // Connect to WebSocket
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const ws = new WebSocket(protocol + '//' + window.location.host + '/ws');
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            updateStatus(data);
+        };
+
+        ws.onclose = function() {
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        };
+    </script>
 </body>
 </html>
 `))
@@ -46,7 +69,6 @@ var HistoryTemplate = template.Must(template.New("history").Parse(`
 <html>
 <head>
     <title>Statusy - History</title>
-    <meta http-equiv="refresh" content="30">
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .history-item {
@@ -65,14 +87,38 @@ var HistoryTemplate = template.Must(template.New("history").Parse(`
         <a href="/history">History</a>
     </nav>
     <h1>History (Last 10 Events)</h1>
-    {{range .}}
-    <div class="history-item">
-        <h3>{{.URL}}</h3>
-        <p>Status: {{.Status}}</p>
-        <p>Message: {{.Message}}</p>
-        <p>Time: {{.Timestamp.Format "2006-01-02 15:04:05"}}</p>
-    </div>
-    {{end}}
+    <div id="history-container"></div>
+
+    <script>
+        const historyContainer = document.getElementById('history-container');
+
+        function updateHistory(history) {
+            historyContainer.innerHTML = history
+                .map(item => ` + "`" + `
+                    <div class="history-item">
+                        <h3>${item.URL}</h3>
+                        <p>Status: ${item.Status}</p>
+                        <p>Message: ${item.Message}</p>
+                        <p>Time: ${new Date(item.Timestamp).toLocaleString()}</p>
+                    </div>
+                ` + "`" + `).join('');
+        }
+
+        // Connect to WebSocket
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const ws = new WebSocket(protocol + '//' + window.location.host + '/ws');
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            updateHistory(data);
+        };
+
+        ws.onclose = function() {
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        };
+    </script>
 </body>
 </html>
 `))
