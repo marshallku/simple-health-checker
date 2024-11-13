@@ -51,7 +51,8 @@ var IndexTemplate = template.Must(template.New("index").Parse(`
 
         ws.onmessage = function(event) {
             const data = JSON.parse(event.data);
-            updateStatus(data);
+            if (data.Type !== 'results') return;
+            updateStatus(data.Data);
         };
 
         ws.onclose = function() {
@@ -98,7 +99,6 @@ var HistoryTemplate = template.Must(template.New("history").Parse(`
                     <div class="history-item">
                         <h3>${item.URL}</h3>
                         <p>Status: ${item.Status}</p>
-                        <p>Message: ${item.Message}</p>
                         <p>Time: ${new Date(item.Timestamp).toLocaleString()}</p>
                     </div>
                 ` + "`" + `).join('');
@@ -110,7 +110,8 @@ var HistoryTemplate = template.Must(template.New("history").Parse(`
 
         ws.onmessage = function(event) {
             const data = JSON.parse(event.data);
-            updateHistory(data);
+            if (data.Type !== 'history') return;
+            updateHistory(data.Data);
         };
 
         ws.onclose = function() {

@@ -56,7 +56,10 @@ func (s *Server) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 	defer s.store.RemoveClient(conn)
 
 	// Send initial data
-	conn.WriteJSON(s.store.GetResults())
+	conn.WriteJSON(store.Message{
+		Type: "results",
+		Data: s.store.GetResults(),
+	})
 
 	// Keep connection alive
 	for {

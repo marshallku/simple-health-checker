@@ -12,7 +12,12 @@ type Store struct {
 	results   map[string]types.CheckResult
 	history   []types.History
 	clients   map[*websocket.Conn]bool
-	broadcast chan interface{}
+	broadcast chan Message
+}
+
+type Message struct {
+	Type string
+	Data interface{}
 }
 
 func NewStore() *Store {
@@ -20,7 +25,7 @@ func NewStore() *Store {
 		results:   make(map[string]types.CheckResult),
 		history:   make([]types.History, 0),
 		clients:   make(map[*websocket.Conn]bool),
-		broadcast: make(chan interface{}),
+		broadcast: make(chan Message),
 	}
 	go s.handleBroadcast()
 	return s
@@ -57,7 +62,18 @@ func (s *Store) UpdateResult(result types.CheckResult) {
 	s.results[result.URL] = result
 	s.mu.Unlock()
 
-	s.broadcast <- s.GetResults()
+	s.broadcast <- Message{Type: "results", Data: s.GetResults()}
+
+	// Add history
+	status := "UP"
+	if !result.Status {
+		status = "DOWN"
+	}
+
+	s.AddHistory(types.History{
+		URL:    result.URL,
+		Status: status,
+	})
 }
 
 func (s *Store) AddHistory(h types.History) {
@@ -68,7 +84,7 @@ func (s *Store) AddHistory(h types.History) {
 	}
 	s.mu.Unlock()
 
-	s.broadcast <- s.GetHistory()
+	s.broadcast <- Message{Type: "history", Data: s.GetHistory()}
 }
 
 func (s *Store) GetResults() map[string]types.CheckResult {

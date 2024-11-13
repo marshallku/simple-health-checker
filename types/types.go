@@ -14,5 +14,4 @@ type History struct {
 	URL       string
 	Status    string
 	Timestamp time.Time
-	Message   string
 }
