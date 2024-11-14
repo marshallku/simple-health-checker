@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/marshallku/statusy/config"
-	health "github.com/marshallku/statusy/pkg"
+	"github.com/marshallku/statusy/health"
 	"github.com/marshallku/statusy/server"
 	"github.com/marshallku/statusy/store"
 )
