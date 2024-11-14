@@ -16,8 +16,8 @@ type Store struct {
 }
 
 type Message struct {
-	Type string
-	Data interface{}
+	Type string      `json:"type"`
+	Data interface{} `json:"data"`
 }
 
 func NewStore() *Store {

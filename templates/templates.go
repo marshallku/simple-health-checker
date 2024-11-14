@@ -36,11 +36,11 @@ var IndexTemplate = template.Must(template.New("index").Parse(`
             statusContainer.innerHTML = Object.values(results)
                 .map(result => ` + "`" + `
                     <div class="status-card ${result.Status}">
-                        <h3>${result.URL}</h3>
-                        <p>Status: ${result.Status}</p>
-                        <p>Status Code: ${result.StatusCode}</p>
-                        <p>Response Time: ${result.TimeTaken}</p>
-                        <p>Last Checked: ${new Date(result.LastChecked).toLocaleString()}</p>
+                        <h3>${result.url}</h3>
+                        <p>Status: ${result.status ? 'UP' : 'DOWN'}</p>
+                        <p>Status Code: ${result.statusCode}</p>
+                        <p>Response Time: ${result.timeTaken}</p>
+                        <p>Last Checked: ${new Date(result.lastChecked).toLocaleString()}</p>
                     </div>
                 ` + "`" + `).join('');
         }
@@ -51,8 +51,8 @@ var IndexTemplate = template.Must(template.New("index").Parse(`
 
         ws.onmessage = function(event) {
             const data = JSON.parse(event.data);
-            if (data.Type !== 'results') return;
-            updateStatus(data.Data);
+            if (data.type !== 'results') return;
+            updateStatus(data.data);
         };
 
         ws.onclose = function() {
@@ -97,9 +97,9 @@ var HistoryTemplate = template.Must(template.New("history").Parse(`
             historyContainer.innerHTML = history
                 .map(item => ` + "`" + `
                     <div class="history-item">
-                        <h3>${item.URL}</h3>
-                        <p>Status: ${item.Status}</p>
-                        <p>Time: ${new Date(item.Timestamp).toLocaleString()}</p>
+                        <h3>${item.url}</h3>
+                        <p>Status: ${item.status}</p>
+                        <p>Time: ${new Date(item.timestamp).toLocaleString()}</p>
                     </div>
                 ` + "`" + `).join('');
         }
@@ -110,8 +110,8 @@ var HistoryTemplate = template.Must(template.New("history").Parse(`
 
         ws.onmessage = function(event) {
             const data = JSON.parse(event.data);
-            if (data.Type !== 'history') return;
-            updateHistory(data.Data);
+            if (data.type !== 'history') return;
+            updateHistory(data.data);
         };
 
         ws.onclose = function() {
