@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/marshallku/statusy/config"
+	"github.com/marshallku/statusy/handler"
 	"github.com/marshallku/statusy/health"
-	"github.com/marshallku/statusy/server"
 	"github.com/marshallku/statusy/store"
 )
 
@@ -32,10 +32,10 @@ func main() {
 		health.Check(cfg, nil)
 	} else {
 		store := store.NewStore()
-		server := server.NewServer(store)
+		server := handler.NewHandler(store)
 
 		go func() {
-			if err := server.Start(); err != nil {
+			if err := server.RegisterRoutes(); err != nil {
 				log.Fatal(err)
 			}
 		}()
