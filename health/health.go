@@ -15,8 +15,10 @@ import (
 )
 
 const (
-	UP   = "UP"
-	DOWN = "DOWN"
+	UP                         = "UP"
+	DOWN                       = "DOWN"
+	MicrosecondsInMilliSeconds = 1000
+	MicrosecondsInSecond       = 1000000
 )
 
 func Check(cfg *config.Config, store *store.Store) {
@@ -106,7 +108,12 @@ func checkPage(cfg *config.Config, page config.Page) types.CheckResult {
 
 	duration := time.Since(start)
 	body, _ := io.ReadAll(resp.Body)
-	timeTaken := fmt.Sprintf("%.3f ms", float64(duration.Milliseconds()))
+	timeTakenInMicroseconds := duration.Microseconds()
+	timeTaken := fmt.Sprintf("%.3f ms", float64(duration.Microseconds())/MicrosecondsInMilliSeconds)
+
+	if timeTakenInMicroseconds > MicrosecondsInSecond {
+		timeTaken = fmt.Sprintf("%.3f s", float64(timeTakenInMicroseconds)/MicrosecondsInSecond)
+	}
 
 	if page.Speed > 0 && duration.Milliseconds() > int64(page.Speed) {
 		utils.SendNotification(cfg, utils.NotificationParams{
