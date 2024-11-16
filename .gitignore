@@ -12,3 +12,5 @@ config.yml
 # Logs
 *.log
 report.xml
+
+coverage.out
