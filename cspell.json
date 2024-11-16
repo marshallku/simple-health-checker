@@ -1,11 +1,12 @@
 {
     "words": [
         "marshallku",
-        "Statusy",
-        "testdata",
-        "upgrader",
         "onclose",
-        "onmessage"
+        "onmessage",
+        "Statusy",
+        "stretchr",
+        "testdata",
+        "upgrader"
     ],
     "ignorePaths": [
         "go.mod",
