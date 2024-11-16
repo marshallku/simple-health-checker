@@ -1,11 +1,15 @@
+
 # Statusy
 
-![health-check](https://github.com/user-attachments/assets/496efc15-855a-48c8-a0ad-473c0edd1c97)
+![statusy](https://github.com/user-attachments/assets/5d2ed59e-5a5e-4584-a258-9dbdd972ddb6)
 
-A lightweight, configurable health checker for web services written in Go. This tool performs HTTP requests to specified URLs and checks for expected status codes, response times, and content inclusion. It can send notifications to Discord when checks fail.
+A lightweight, configurable health checker for web services written in Go. This tool performs HTTP requests to specified URLs and checks for expected status codes, response times, and content inclusion. It provides real-time status monitoring through a web interface and can send notifications to Discord when checks fail.
 
 ## Features
 
+- Web interface for real-time status monitoring
+- Real-time updates via WebSocket
+- History tracking of the last 10 events
 - Configurable health checks via YAML file
 - Checks for HTTP status codes
 - Checks for response time
@@ -36,6 +40,7 @@ Create a `config.yaml` file in the project root directory. Here's an example con
 ```yaml
 webhook_url: https://discord.com/api/webhooks/your_webhook_url_here
 timeout: 5000  # Global timeout in milliseconds
+checkInterval: 60  # Check interval in seconds
 
 pages:
   - url: https://example.com
@@ -52,6 +57,7 @@ pages:
 
 - `webhook_url`: Discord webhook URL for notifications
 - `timeout`: Global timeout for all requests in milliseconds
+- `checkInterval`: Interval between health checks in seconds
 - `pages`: List of pages to check
   - `url`: URL to check (required)
   - `status`: Expected HTTP status code (default: 200)
@@ -63,6 +69,8 @@ pages:
     - `body`: Request body for POST/PUT requests
 
 ## Usage
+
+### Running Locally
 
 Run the health checker with:
 
@@ -76,18 +84,47 @@ Or, to specify a different config file:
 go run . --config path/to/your/config.yaml
 ```
 
+If you want to run statusy just once without the web interface:
+
+```bash
+go run . --mode cli
+```
+
+### Using Docker
+
+Build and run with Docker:
+
+```bash
+docker build -t statusy .
+docker run -p 8080:8080 statusy
+```
+
+### Accessing the Web Interface
+
+Once running, access the web interface at:
+
+- Status Dashboard: <http://localhost:8080/>
+- History Page: <http://localhost:8080/history>
+
+The web interface features:
+
+- Real-time status updates via WebSocket
+- Current status of all monitored pages
+- History of the last 10 events
+- Automatic updates without page refresh
+
 ## Building
 
 To build an executable:
 
 ```bash
-go build -o health_checker
+go build -o statusy
 ```
 
 Then run the executable:
 
 ```bash
-./health_checker
+./statusy
 ```
 
 ## Contributing
