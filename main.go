@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	mode := flag.String("mode", "cli", "Mode to run in (server or health)")
+	mode := flag.String("mode", "server", "Mode to run in (server or health)")
 	configFile := flag.String("config", "config.yaml", "Path to configuration file")
 
 	flag.Parse()
@@ -28,7 +28,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if *mode != "server" {
+	if *mode == "cli" {
 		health.Check(cfg, nil)
 	} else {
 		store := store.NewStore()
