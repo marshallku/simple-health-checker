@@ -3,7 +3,7 @@ FROM golang:1.23.3-alpine3.20 AS build
 WORKDIR /app
 COPY . .
 
-RUN go build -o statusy .
+RUN go build -ldflags "-s -w" -o statusy .
 
 FROM scratch
 
